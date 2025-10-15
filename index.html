@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>À DEUX — Espace Couple Interactif • SCL Studio</title>
+<meta name="description" content="À DEUX — l'espace couple interactif par SCL Studio : quiz, idées de dates, jeux, souvenirs & tracker d'intimité. Données privées, sauvegarde locale.">
+<link rel="icon" href="https://static.wixstatic.com/media/9c25f2_6c6a86b7516f471a879d5f74cbed7364~mv2.png">
+<style>
+  :root{
+    /* Palette romantique, chaleureuse & fun */
+    --bg1:#FFF7F6;        /* blush clair */
+    --bg2:#FFEDE8;        /* pêche rosé */
+    --card:#FFFFFF;
+    --text:#2a2a2a;
+    --muted:#7b6f72;      /* taupe rosé */
+    --accent:#E2777A;     /* rose chaud */
+    --accent-2:#F2B8B5;   /* rose pâle */
+    --accent-3:#F8D9CF;   /* nude */
+    --shadow:0 10px 30px rgba(226,119,122,0.15);
+  }
+  *{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+  body{
+    margin:0;color:var(--text);
+    background:radial-gradient(1200px 600px at 20% -10%, var(--bg2), transparent 60%),
+               radial-gradient(1200px 700px at 100% 10%, var(--accent-3), transparent 60%),
+               linear-gradient(180deg,var(--bg1),#fff);
+    background-attachment: fixed;
+  }
+  /* petits coeurs en filigrane */
+  body::before{
+    content:"❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤ ❤";
+    position:fixed; inset:auto 10px 10px auto;
+    font-size:10px; letter-spacing:6px; color:rgba(226,119,122,0.25);
+    transform:rotate(-12deg);
+    pointer-events:none; z-index:0;
+  }
+  a{color:inherit;text-decoration:none}
+  .app{display:grid;grid-template-columns:280px 1fr;min-height:100vh;position:relative;z-index:1}
+  @media(max-width:980px){.app{grid-template-columns:1fr} .sidebar{position:sticky;top:0;z-index:3}}
+  .sidebar{background:rgba(255,255,255,0.75);backdrop-filter:blur(6px);border-right:1px solid #f3e3df;padding:18px}
+  .brand{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+  .brand img{width:48px;height:48px;border-radius:12px;object-fit:contain;background:#fff;box-shadow:var(--shadow)}
+  .brand h1{margin:0;font-size:18px;line-height:1.1}
+  .brand .small{font-size:12px;color:var(--muted)}
+  .nav{display:grid;gap:8px;margin-top:8px}
+  .nav a{padding:10px 12px;border-radius:12px;border:1px solid transparent;transition:all .18s ease}
+  .nav a:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+  .nav a.active{background:#fff;border-color:#f1dfdc;box-shadow:var(--shadow)}
+  .content{padding:22px;max-width:1100px}
+  .card{background:var(--card);padding:16px;border-radius:16px;box-shadow:var(--shadow);margin-bottom:16px;border:1px solid #f6e9e6}
+  h2{margin:0 0 10px 0;font-size:22px;display:flex;gap:8px;align-items:center}
+  h3{margin:0 0 8px 0;font-size:16px}
+  .small{font-size:12px;color:var(--muted)}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:4px}
+  input[type="text"],input[type="date"],input[type="number"],select,textarea{
+    width:100%;padding:10px;border:1px solid #efdfdb;border-radius:10px;background:#fff
+  }
+  textarea{min-height:84px;resize:vertical}
+  button{background:var(--accent);color:#fff;border:0;padding:10px 12px;border-radius:12px;cursor:pointer;transition:transform .12s ease, box-shadow .12s ease}
+  button:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+  button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  button.danger{background:#E06C75}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .grid{display:grid;gap:12px}
+  .two{grid-template-columns:1fr 1fr}
+  .three{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:880px){.two,.three{grid-template-columns:1fr}}
+  .list{display:grid;gap:10px}
+  .item{border:1px dashed #f0dad6;border-radius:12px;padding:12px;background:#fff}
+  .meta{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:12px;flex-wrap:wrap}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap}
+  .pill{padding:6px 10px;border-radius:999px;background:#fff4f3;border:1px solid #f4d4d1;font-size:12px}
+  .thumb{width:84px;height:84px;border-radius:10px;object-fit:cover;background:#f9f3f2;border:1px solid #f1dfdc}
+  .flex{display:flex;gap:10px;align-items:center}
+  .right{margin-left:auto}
+  .note{background:linear-gradient(180deg,#fff, #fff7f6);border:1px solid #f4deda;padding:12px;border-radius:12px}
+  .heart-bullet::before{content:"❤";margin-right:8px;color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <img alt="logo A DEUX" src="https://static.wixstatic.com/media/9c25f2_6c6a86b7516f471a879d5f74cbed7364~mv2.png"/>
+      <div>
+        <h1>À DEUX</h1>
+        <div class="small">Espace Couple Interactif • SCL Studio</div>
+      </div>
+    </div>
+    <nav class="nav" id="nav">
+      <a href="#accueil">🏠 Accueil</a>
+      <a href="#routine">🗓️ Routine hebdo / Check-in</a>
+      <a href="#quiz">💬 Quiz “Nous”</a>
+      <a href="#dates">🎲 Idées de dates (roulette)</a>
+      <a href="#jeux">🎯 Jeux Osmose</a>
+      <a href="#intimite">❤️ Tracker d’intimité</a>
+      <a href="#habitudes">🌿 Habitudes & Projets</a>
+      <a href="#surprises">🎁 Boîte à surprises</a>
+      <a href="#souvenirs">📸 Souvenirs (photos)</a>
+      <a href="#faq">❓ FAQ & crédits</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <!-- Accueil -->
+    <section class="view card" id="accueil">
+      <h2>❤️ Bienvenue dans “À DEUX”</h2>
+      <p class="small">Tout ce que vous notez est <strong>privé</strong> et reste sur votre appareil (localStorage). Export CSV/JSON disponibles dans les sections.</p>
+      <div class="grid two">
+        <div class="note">
+          <h3 class="heart-bullet">Comment ça marche ?</h3>
+          <ul>
+            <li>Choisissez un onglet dans le menu de gauche.</li>
+            <li>Ajoutez vos entrées : quiz, dates, jeux, souvenirs…</li>
+            <li>Vos données sont sauvegardées automatiquement.</li>
+          </ul>
+        </div>
+        <div class="note">
+          <h3 class="heart-bullet">Conseil douceur</h3>
+          <p>Planifiez une <strong>date night</strong> par semaine. Utilisez la roulette pour décider sans se prendre la tête 😄</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Routine -->
+    <section class="view card" id="routine" hidden>
+      <div class="flex"><h2>🗓️ Routine hebdo / Check-in</h2><div class="right toolbar"><button class="ghost" id="routineExport">Exporter CSV</button></div></div>
+      <div class="grid two">
+        <div>
+          <h3>Ajouter un check-in</h3>
+          <div class="row">
+            <label style="flex:1">Date<input type="date" id="r_date"></label>
+            <label style="flex:2">État d’esprit<select id="r_mood">
+              <option>😊 Heureux·se</option><option>😌 Apaisé·e</option><option>🤔 Réfléchi·e</option><option>😕 À clarifier</option>
+            </select></label>
+          </div>
+          <label>3 petites choses à célébrer<textarea id="r_celebrate" placeholder="Un fou rire, une attention, un moment complice…"></textarea></label>
+          <label>Un point à améliorer<textarea id="r_improve" placeholder="Une habitude à ajuster, un besoin à exprimer…"></textarea></label>
+          <button id="routineAdd">Ajouter</button>
+        </div>
+        <div>
+          <h3>Historique</h3>
+          <div class="list" id="routineList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quiz -->
+    <section class="view card" id="quiz" hidden>
+      <div class="flex"><h2>💬 Quiz “Nous”</h2><div class="right toolbar"><button class="ghost" id="quizExport">Exporter CSV</button></div></div>
+      <div class="grid two">
+        <div>
+          <h3>Créer une question</h3>
+          <label>Question<input id="q_text" type="text" placeholder="Ex. Ton souvenir préféré ensemble ?" /></label>
+          <div class="row">
+            <label style="flex:1">Réponse A<input id="q_a" type="text" /></label>
+            <label style="flex:1">Réponse B<input id="q_b" type="text" /></label>
+          </div>
+          <div class="row">
+            <label style="flex:1">Réponse C<input id="q_c" type="text" /></label>
+            <label style="flex:1">Réponse D<input id="q_d" type="text" /></label>
+          </div>
+          <label>Réponse libre (optionnel)<input id="q_free" type="text" placeholder="Ex. Écris ta propre réponse"/></label>
+          <button id="quizAdd">Ajouter question</button>
+          <p class="small">Astuce : vous pouvez poser des <em>questions ouvertes</em> — laissez les réponses vides.</p>
+        </div>
+        <div>
+          <h3>Questions</h3>
+          <div class="list" id="quizList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Idées de dates -->
+    <section class="view card" id="dates" hidden>
+      <div class="flex"><h2>🎲 Idées de dates (roulette)</h2><div class="right toolbar"><button class="ghost" id="datesExport">Exporter CSV</button></div></div>
+      <div class="grid two">
+        <div>
+          <h3>Ajouter une idée</h3>
+          <label>Intitulé<input id="d_title" type="text" placeholder="Ex. Pique-nique coucher de soleil"/></label>
+          <div class="row">
+            <label style="flex:1">Budget<select id="d_budget"><option>Low</option><option>Medium</option><option>High</option></select></label>
+            <label style="flex:1">Temps<select id="d_time"><option>30 min</option><option>1–2h</option><option>Soirée</option></select></label>
+            <label style="flex:1">Lieu<select id="d_place"><option>Maison</option><option>Extérieur</option><option>Ville</option></select></label>
+          </div>
+          <label>Détails<textarea id="d_desc" placeholder="Ambiance, ingrédients, playlist…"></textarea></label>
+          <button id="datesAdd">Ajouter idée</button>
+          <div class="note" style="margin-top:10px">
+            <div class="flex"><strong>Roulette</strong><button class="ghost right" id="datesSpin">🎲 Lancer</button></div>
+            <div id="datesResult" class="small" style="margin-top:6px;color:#333"></div>
+          </div>
+        </div>
+        <div>
+          <h3>Liste des idées</h3>
+          <div class="list" id="datesList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Jeux Osmose -->
+    <section class="view card" id="jeux" hidden>
+      <div class="flex"><h2>🎯 Jeux “Osmose”</h2><div class="right toolbar"><button class="ghost" id="gamesExport">Exporter CSV</button></div></div>
+      <div class="grid two">
+        <div>
+          <h3>Ajouter un défi</h3>
+          <label>Défi / Jeu<input id="g_title" type="text" placeholder="Ex. 90 minutes sans écrans, raconte une anecdote"/></label>
+          <label>Niveau<select id="g_level"><option>Douceur</option><option>Connexion</option><option>Fun</option></select></label>
+          <button id="gamesAdd">Ajouter défi</button>
+        </div>
+        <div>
+          <h3>Liste des défis</h3>
+          <div class="list" id="gamesList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tracker d'intimité -->
+    <section class="view card" id="intimite" hidden>
+      <div class="flex"><h2>❤️ Tracker d’intimité</h2><div class="right toolbar"><button class="ghost" id="intimExport">Exporter CSV</button></div></div>
+      <div class="grid two">
+        <div>
+          <h3>Ajouter une entrée</h3>
+          <div class="row">
+            <label style="flex:1">Date<input type="date" id="i_date"></label>
+            <label style="flex:1">Type<select id="i_type">
+              <option value="connect">Connexion</option><option value="intime">Intime</option><option value="projet">Projet</option><option value="surprise">Surprise</option>
+            </select></label>
+          </div>
+          <div class="row">
+            <label style="flex:1">Humeur<select id="i_mood">
+              <option>❤️</option><option>😊</option><option>😌</option><option>🤔</option><option>😕</option>
+            </select></label>
+            <label style="flex:1">Score (0–10)<input id="i_score" type="number" min="0" max="10" value="8"></label>
+          </div>
+          <label>Note<textarea id="i_note" placeholder="Souvenir, ressenti, clin d'œil…"></textarea></label>
+          <div class="row">
+            <label>Photo<input id="i_photo" type="file" accept="image/*"></label>
+            <button id="intimAdd" class="right">Ajouter</button>
+          </div>
+        </div>
+        <div>
+          <h3>Historique</h3>
+          <div class="list" id="intimList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Habitudes & Projets -->
+    <section class="view card" id="habitudes" hidden>
+      <div class="flex"><h2>🌿 Habitudes & Projets</h2><div class="right toolbar"><button class="ghost" id="habExport">Exporter CSV</button></div></div>
+      <div class="grid two">
+        <div>
+          <h3>Ajouter une habitude</h3>
+          <label>Nom<input id="h_name" type="text" placeholder="Ex. Date night du vendredi"/></label>
+          <label>Fréquence<select id="h_freq"><option>Quotidien</option><option>Hebdomadaire</option><option>Mensuel</option></select></label>
+          <button id="habAdd">Ajouter habitude</button>
+          <hr/>
+          <h3>Ajouter un projet</h3>
+          <label>Titre<input id="p_title" type="text" placeholder="Ex. Weekend à Rome"/></label>
+          <label>Détails<textarea id="p_desc" placeholder="Budget, lieux, moodboard…"></textarea></label>
+          <button id="projAdd">Ajouter projet</button>
+        </div>
+        <div>
+          <h3>Suivi</h3>
+          <div class="list" id="habList"></div>
+          <div class="list" id="projList" style="margin-top:10px"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Boîte à surprises -->
+    <section class="view card" id="surprises" hidden>
+      <div class="flex"><h2>🎁 Boîte à surprises & cadeaux</h2><div class="right toolbar"><button class="ghost" id="giftExport">Exporter CSV</button></div></div>
+      <div class="grid two">
+        <div>
+          <h3>Nouvelle surprise</h3>
+          <label>Idée<input id="s_title" type="text" placeholder="Ex. Mot doux dans une poche"/></label>
+          <label>Budget<select id="s_budget"><option>0–10€</option><option>10–30€</option><option>30€+</option></select></label>
+          <button id="sAdd">Ajouter</button>
+        </div>
+        <div>
+          <h3>Liste</h3>
+          <div class="list" id="sList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Souvenirs -->
+    <section class="view card" id="souvenirs" hidden>
+      <div class="flex"><h2>📸 Souvenirs (photos & anecdotes)</h2><div class="right toolbar"><button class="ghost" id="memExport">Exporter CSV</button></div></div>
+      <div class="grid two">
+        <div>
+          <h3>Ajouter un souvenir</h3>
+          <div class="row">
+            <label style="flex:1">Date<input type="date" id="m_date"></label>
+            <label style="flex:1">Lieu<input type="text" id="m_place" placeholder="Ex. Marseille, Goudes"/></label>
+          </div>
+          <label>Histoire<textarea id="m_text" placeholder="Pourquoi c’était spécial ?"></textarea></label>
+          <div class="row">
+            <label>Photo<input id="m_photo" type="file" accept="image/*"></label>
+            <button id="mAdd" class="right">Ajouter</button>
+          </div>
+        </div>
+        <div>
+          <h3>Galerie</h3>
+          <div class="list" id="mList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="view card" id="faq" hidden>
+      <h2>❓ FAQ & crédits</h2>
+      <p class="small">Créé par <strong>SCL Studio</strong> — données stockées localement (navigateur). Export CSV/JSON dans chaque section.</p>
+      <ul>
+        <li><strong>Puis-je tout effacer ?</strong> Oui — chaque section permet la suppression.</li>
+        <li><strong>Comment sauvegarder ?</strong> Exportez vos données en CSV régulièrement.</li>
+        <li><strong>Compatibilité ?</strong> Ordinateur, tablette, mobile (recommandé : tablette).</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<script>
+/* utils */
+function uid(){ return 'id'+Math.random().toString(36).slice(2,9) }
+function save(k, d){ localStorage.setItem(k, JSON.stringify(d)); }
+function load(k){ try{ return JSON.parse(localStorage.getItem(k) || '[]'); } catch(e){ return [] } }
+function toCSV(rows, headers){
+  const esc = s => '"'+String(s ?? '').replaceAll('"','""')+'"';
+  const lines = [headers.join(',')];
+  for(const r of rows) lines.push(headers.map(h=>esc(r[h])).join(','));
+  return lines.join('\n');
+}
+function fileToDataUrl(file, maxSize=900, quality=0.85){
+  return new Promise((res, rej)=>{
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = ()=>{
+        const canvas = document.createElement('canvas');
+        const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+        res(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = rej;
+      img.src = e.target.result;
+    };
+    reader.onerror = rej;
+    reader.readAsDataURL(file);
+  });
+}
+const $ = sel => document.querySelector(sel);
+const $$ = sel => [...document.querySelectorAll(sel)];
+
+/* router */
+const routes = $$('.view').map(v => v.id);
+function setActive(hash){
+  const target = hash.replace('#','') || 'accueil';
+  routes.forEach(id => { $('#'+id).hidden = (id !== target); });
+  $$('#nav a').forEach(a => a.classList.toggle('active', a.getAttribute('href')==='#'+target));
+  if(!routes.includes(target)) location.hash = '#accueil';
+}
+window.addEventListener('hashchange', ()=> setActive(location.hash));
+setActive(location.hash);
+
+/* Routine */
+const RKEY='A2_Routine_v1';
+function renderRoutine(){
+  const list = load(RKEY).sort((a,b)=> new Date(b.date)-new Date(a.date));
+  const el = $('#routineList'); el.innerHTML = '';
+  if(!list.length){ el.innerHTML = '<div class="small">Aucun check-in.</div>'; return; }
+  for(const it of list){
+    const div = document.createElement('div'); div.className='item';
+    div.innerHTML = `<div class="meta">${new Date(it.date).toLocaleDateString()} • ${it.mood}</div>
+    <div><strong>À célébrer</strong><div>${(it.celebrate||'').replaceAll('\n','<br>')}</div></div>
+    <div style="margin-top:6px"><strong>À améliorer</strong><div>${(it.improve||'').replaceAll('\n','<br>')}</div></div>
+    <div class="toolbar" style="margin-top:8px"><button data-id="${it.id}" class="ghost r-del">Supprimer</button></div>`;
+    el.appendChild(div);
+  }
+}
+$('#routineAdd').addEventListener('click', ()=>{
+  const item = {
+    id: uid(),
+    date: $('#r_date').value || new Date().toISOString().slice(0,10),
+    mood: $('#r_mood').value,
+    celebrate: $('#r_celebrate').value.trim(),
+    improve: $('#r_improve').value.trim()
+  };
+  const list = load(RKEY); list.push(item); save(RKEY, list);
+  $('#r_celebrate').value=''; $('#r_improve').value='';
+  renderRoutine();
+});
+$('#routineList').addEventListener('click', e=>{
+  if(e.target.classList.contains('r-del')){
+    const id=e.target.dataset.id; const list=load(RKEY).filter(x=>x.id!==id); save(RKEY,list); renderRoutine();
+  }
+});
+$('#routineExport').addEventListener('click', ()=>{
+  const list=load(RKEY); if(!list.length) return alert('Rien à exporter.');
+  const csv=toCSV(list,['id','date','mood','celebrate','improve']);
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a');
+  a.href=url; a.download='ADeux_routine.csv'; a.click(); URL.revokeObjectURL(url);
+});
+renderRoutine();
+
+/* Quiz */
+const QKEY='A2_Quiz_v1';
+function renderQuiz(){
+  const list = load(QKEY).sort((a,b)=> b.createdAt.localeCompare(a.createdAt));
+  const el = $('#quizList'); el.innerHTML='';
+  if(!list.length){ el.innerHTML='<div class="small">Aucune question.</div>'; return; }
+  for(const q of list){
+    const div=document.createElement('div'); div.className='item';
+    const options=[q.a,q.b,q.c,q.d].filter(Boolean).map((opt,i)=>`<span class="pill">Option ${'ABCD'[i]}: ${opt}</span>`).join(' ');
+    div.innerHTML = `<div><strong>${q.text}</strong></div>
+      <div class="meta" style="margin:6px 0">${options || '<span class="small">Question ouverte</span>'}</div>
+      ${q.free ? '<div class="small">Réponse libre : '+q.free+'</div>' : ''}
+      <div class="toolbar" style="margin-top:8px">
+        <button class="ghost q-ask" data-id="${q.id}">Poser maintenant</button>
+        <button class="ghost q-del" data-id="${q.id}">Supprimer</button>
+      </div>`;
+    el.appendChild(div);
+  }
+}
+$('#quizAdd').addEventListener('click', ()=>{
+  const q = {
+    id: uid(),
+    text: $('#q_text').value.trim(),
+    a: $('#q_a').value.trim(), b: $('#q_b').value.trim(),
+    c: $('#q_c').value.trim(), d: $('#q_d').value.trim(),
+    free: $('#q_free').value.trim(),
+    createdAt: new Date().toISOString()
+  };
+  if(!q.text) return alert('Écris la question.');
+  const list=load(QKEY); list.push(q); save(QKEY,list);
+  ['#q_text','#q_a','#q_b','#q_c','#q_d','#q_free'].forEach(s=>$(s).value='');
+  renderQuiz();
+});
+$('#quizList').addEventListener('click', e=>{
+  const id = e.target.dataset.id;
+  if(e.target.classList.contains('q-del')){
+    const list=load(QKEY).filter(x=>x.id!==id); save(QKEY,list); renderQuiz();
+  }
+  if(e.target.classList.contains('q-ask')){
+    const q=load(QKEY).find(x=>x.id===id); if(!q) return;
+    const opts=[q.a,q.b,q.c,q.d].filter(Boolean);
+    const text=q.text + (opts.length? '\n\n' + opts.map((o,i)=>String.fromCharCode(65+i)+'. '+o).join('\n') : '');
+    alert(text);
+  }
+});
+$('#quizExport').addEventListener('click', ()=>{
+  const list=load(QKEY); if(!list.length) return alert('Rien à exporter.');
+  const csv=toCSV(list,['id','text','a','b','c','d','free','createdAt']);
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='ADeux_quiz.csv'; a.click(); URL.revokeObjectURL(url);
+});
+renderQuiz();
+
+/* Dates */
+const DKEY='A2_Dates_v1';
+function renderDates(){
+  const list=load(DKEY).sort((a,b)=> b.createdAt.localeCompare(a.createdAt));
+  const el=$('#datesList'); el.innerHTML='';
+  if(!list.length){ el.innerHTML='<div class="small">Aucune idée pour l’instant.</div>'; return; }
+  for(const d of list){
+    const div=document.createElement('div'); div.className='item';
+    div.innerHTML=`<div><strong>${d.title}</strong></div>
+      <div class="meta">${d.budget} • ${d.time} • ${d.place}</div>
+      ${d.desc?'<div style="margin-top:6px">'+d.desc+'</div>':''}
+      <div class="toolbar" style="margin-top:8px">
+        <button class="ghost d-pick" data-id="${d.id}">Choisir</button>
+        <button class="ghost d-del" data-id="${d.id}">Supprimer</button>
+      </div>`;
+    el.appendChild(div);
+  }
+}
+$('#datesAdd').addEventListener('click', ()=>{
+  const item={
+    id:uid(), title:$('#d_title').value.trim(),
+    budget:$('#d_budget').value, time:$('#d_time').value, place:$('#d_place').value,
+    desc:$('#d_desc').value.trim(), createdAt:new Date().toISOString()
+  };
+  if(!item.title) return alert('Nom de l’idée ?');
+  const list=load(DKEY); list.push(item); save(DKEY,list);
+  ['#d_title','#d_desc'].forEach(s=>$(s).value=''); renderDates();
+});
+$('#datesList').addEventListener('click', e=>{
+  const id=e.target.dataset.id;
+  if(e.target.classList.contains('d-del')){
+    const list=load(DKEY).filter(x=>x.id!==id); save(DKEY,list); renderDates();
+  }
+  if(e.target.classList.contains('d-pick')){
+    const d=load(DKEY).find(x=>x.id===id); if(!d) return;
+    alert('Date choisie : '+d.title);
+  }
+});
+$('#datesSpin').addEventListener('click', ()=>{
+  const list=load(DKEY); if(!list.length) return alert('Ajoute d’abord des idées.');
+  const d=list[Math.floor(Math.random()*list.length)];
+  $('#datesResult').textContent='🎲 ' + d.title + ' — ' + (d.desc || '');
+});
+$('#datesExport').addEventListener('click', ()=>{
+  const list=load(DKEY); if(!list.length) return alert('Rien à exporter.');
+  const csv=toCSV(list,['id','title','budget','time','place','desc','createdAt']);
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='ADeux_dates.csv'; a.click(); URL.revokeObjectURL(url);
+});
+renderDates();
+
+/* Jeux */
+const GKEY='A2_Games_v1';
+function renderGames(){
+  const list=load(GKEY).sort((a,b)=> b.createdAt.localeCompare(a.createdAt));
+  const el=$('#gamesList'); el.innerHTML='';
+  if(!list.length){ el.innerHTML='<div class="small">Aucun défi.</div>'; return; }
+  for(const g of list){
+    const div=document.createElement('div'); div.className='item';
+    div.innerHTML=`<div><strong>${g.title}</strong></div>
+      <div class="meta">${g.level}</div>
+      <div class="toolbar" style="margin-top:8px">
+        <button class="ghost g-play" data-id="${g.id}">Lancer</button>
+        <button class="ghost g-del" data-id="${g.id}">Supprimer</button>
+      </div>`;
+    el.appendChild(div);
+  }
+}
+$('#gamesAdd').addEventListener('click', ()=>{
+  const item={ id:uid(), title:$('#g_title').value.trim(), level:$('#g_level').value, createdAt:new Date().toISOString() };
+  if(!item.title) return alert('Nom du défi ?');
+  const list=load(GKEY); list.push(item); save(GKEY,list); $('#g_title').value=''; renderGames();
+});
+$('#gamesList').addEventListener('click', e=>{
+  const id=e.target.dataset.id;
+  if(e.target.classList.contains('g-del')){
+    const list=load(GKEY).filter(x=>x.id!==id); save(GKEY,list); renderGames();
+  }
+  if(e.target.classList.contains('g-play')){
+    const g=load(GKEY).find(x=>x.id===id); if(!g) return;
+    alert('Défi : ' + g.title + ' ['+g.level+']');
+  }
+});
+$('#gamesExport').addEventListener('click', ()=>{
+  const list=load(GKEY); if(!list.length) return alert('Rien à exporter.');
+  const csv=toCSV(list,['id','title','level','createdAt']);
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='ADeux_jeux.csv'; a.click(); URL.revokeObjectURL(url);
+});
+renderGames();
+
+/* Intimité */
+const IKEY='A2_Intim_v1';
+async function photoToDataUrl(input){
+  if(input.files && input.files[0]){ return await fileToDataUrl(input.files[0]); }
+  return null;
+}
+function renderIntim(){
+  const list=load(IKEY).sort((a,b)=> new Date(b.date)-new Date(a.date));
+  const el=$('#intimList'); el.innerHTML='';
+  if(!list.length){ el.innerHTML='<div class="small">Aucune entrée.</div>'; return; }
+  for(const it of list){
+    const div=document.createElement('div'); div.className='item';
+    div.innerHTML=`<div class="flex">
+      ${it.photo?'<img class="thumb" src="'+it.photo+'" alt="photo"/>':'<div class="thumb" aria-hidden="true"></div>'}
+      <div>
+        <div><strong>${new Date(it.date).toLocaleDateString()}</strong> • ${it.type} • ${it.mood} • score ${it.score??'—'}</div>
+        ${it.note?'<div style="margin-top:6px">'+it.note+'</div>':''}
+        <div class="toolbar" style="margin-top:8px">
+          <button class="ghost i-del" data-id="${it.id}">Supprimer</button>
+        </div>
+      </div>
+    </div>`;
+    el.appendChild(div);
+  }
+}
+$('#intimAdd').addEventListener('click', async ()=>{
+  const item={
+    id:uid(),
+    date:$('#i_date').value || new Date().toISOString().slice(0,10),
+    type:$('#i_type').value, mood:$('#i_mood').value,
+    score:Number($('#i_score').value)||0,
+    note:$('#i_note').value.trim(),
+    photo: await photoToDataUrl($('#i_photo')),
+    createdAt: new Date().toISOString()
+  };
+  const list=load(IKEY); list.push(item); save(IKEY,list);
+  ['#i_note','#i_photo'].forEach(s=>$(s).value=''); renderIntim();
+});
+$('#intimList').addEventListener('click', e=>{
+  if(e.target.classList.contains('i-del')){
+    const id=e.target.dataset.id; const list=load(IKEY).filter(x=>x.id!==id); save(IKEY,list); renderIntim();
+  }
+});
+$('#intimExport').addEventListener('click', ()=>{
+  const list=load(IKEY); if(!list.length) return alert('Rien à exporter.');
+  const csv=toCSV(list,['id','date','type','mood','score','note','createdAt']);
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='ADeux_intimite.csv'; a.click(); URL.revokeObjectURL(url);
+});
+renderIntim();
+
+/* Habitudes & Projets */
+const HKEY='A2_Habits_v1', PKEY='A2_Projects_v1';
+function renderHabProj(){
+  const h=load(HKEY).sort((a,b)=> b.createdAt.localeCompare(a.createdAt));
+  const p=load(PKEY).sort((a,b)=> b.createdAt.localeCompare(a.createdAt));
+  const hl=$('#habList'), pl=$('#projList');
+  hl.innerHTML=''; pl.innerHTML='';
+  if(!h.length) hl.innerHTML='<div class="small">Aucune habitude.</div>';
+  if(!p.length) pl.innerHTML='<div class="small">Aucun projet.</div>';
+  for(const it of h){
+    const div=document.createElement('div'); div.className='item';
+    div.innerHTML=`<div class="flex"><strong>${it.name}</strong><span class="pill">${it.freq}</span><div class="right toolbar"><button class="ghost h-del" data-id="${it.id}">Supprimer</button></div></div>`;
+    hl.appendChild(div);
+  }
+  for(const it of p){
+    const div=document.createElement('div'); div.className='item';
+    div.innerHTML=`<div><strong>${it.title}</strong></div><div class="small">${it.desc||''}</div>
+    <div class="toolbar" style="margin-top:8px"><button class="ghost p-del" data-id="${it.id}">Supprimer</button></div>`;
+    pl.appendChild(div);
+  }
+}
+$('#habAdd').addEventListener('click', ()=>{
+  const it={id:uid(), name:$('#h_name').value.trim(), freq:$('#h_freq').value, createdAt:new Date().toISOString()};
+  if(!it.name) return alert('Nom de l’habitude ?');
+  const list=load(HKEY); list.push(it); save(HKEY,list); $('#h_name').value=''; renderHabProj();
+});
+$('#projAdd').addEventListener('click', ()=>{
+  const it={id:uid(), title:$('#p_title').value.trim(), desc:$('#p_desc').value.trim(), createdAt:new Date().toISOString()};
+  if(!it.title) return alert('Titre du projet ?');
+  const list=load(PKEY); list.push(it); save(PKEY,list); $('#p_title').value=''; $('#p_desc').value=''; renderHabProj();
+});
+$('#habList').addEventListener('click', e=>{
+  if(e.target.classList.contains('h-del')){
+    const id=e.target.dataset.id; const list=load(HKEY).filter(x=>x.id!==id); save(HKEY,list); renderHabProj();
+  }
+});
+$('#projList').addEventListener('click', e=>{
+  if(e.target.classList.contains('p-del')){
+    const id=e.target.dataset.id; const list=load(PKEY).filter(x=>x.id!==id); save(PKEY,list); renderHabProj();
+  }
+});
+$('#habExport').addEventListener('click', ()=>{
+  const h=load(HKEY), p=load(PKEY);
+  if(!h.length && !p.length) return alert('Rien à exporter.');
+  const csv = '--- HABITUDES ---\n' + toCSV(h,['id','name','freq','createdAt']) + '\n\n--- PROJETS ---\n' + toCSV(p,['id','title','desc','createdAt']);
+  const blob=new Blob([csv],{type:'text/plain;charset=utf-8;'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='ADeux_habitudes_projets.txt'; a.click(); URL.revokeObjectURL(url);
+});
+renderHabProj();
+
+/* Surprises */
+const SKEY='A2_Surprises_v1';
+function renderSurprises(){
+  const list=load(SKEY).sort((a,b)=> b.createdAt.localeCompare(a.createdAt));
+  const el=$('#sList'); el.innerHTML='';
+  if(!list.length){ el.innerHTML='<div class="small">Aucune surprise.</div>'; return; }
+  for(const s of list){
+    const div=document.createElement('div'); div.className='item';
+    div.innerHTML=`<div class="flex"><strong>${s.title}</strong><span class="pill">${s.budget}</span><div class="right toolbar"><button class="ghost s-del" data-id="${s.id}">Supprimer</button></div></div>`;
+    el.appendChild(div);
+  }
+}
+$('#sAdd').addEventListener('click', ()=>{
+  const item={id:uid(), title:$('#s_title').value.trim(), budget:$('#s_budget').value, createdAt:new Date().toISOString()};
+  if(!item.title) return alert('Idée ?');
+  const list=load(SKEY); list.push(item); save(SKEY,list); $('#s_title').value=''; renderSurprises();
+});
+$('#sList').addEventListener('click', e=>{
+  if(e.target.classList.contains('s-del')){
+    const id=e.target.dataset.id; const list=load(SKEY).filter(x=>x.id!==id); save(SKEY,list); renderSurprises();
+  }
+});
+$('#giftExport').addEventListener('click', ()=>{
+  const list=load(SKEY); if(!list.length) return alert('Rien à exporter.');
+  const csv=toCSV(list,['id','title','budget','createdAt']);
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='ADeux_surprises.csv'; a.click(); URL.revokeObjectURL(url);
+});
+renderSurprises();
+
+/* Souvenirs */
+const MKEY='A2_Memories_v1';
+function renderMemories(){
+  const list=load(MKEY).sort((a,b)=> new Date(b.date)-new Date(a.date));
+  const el=$('#mList'); el.innerHTML='';
+  if(!list.length){ el.innerHTML='<div class="small">Encore aucun souvenir — ajoutez votre premier !</div>'; return; }
+  for(const m of list){
+    const div=document.createElement('div'); div.className='item';
+    div.innerHTML=`<div class="flex">
+      ${m.photo?'<img class="thumb" src="'+m.photo+'" alt="photo"/>':'<div class="thumb" aria-hidden="true"></div>'}
+      <div>
+        <div><strong>${new Date(m.date).toLocaleDateString()}</strong> • ${m.place||''}</div>
+        ${m.text?'<div style="margin-top:6px">'+m.text+'</div>':''}
+        <div class="toolbar" style="margin-top:8px"><button class="ghost m-del" data-id="${m.id}">Supprimer</button></div>
+      </div>
+    </div>`;
+    el.appendChild(div);
+  }
+}
+$('#mAdd').addEventListener('click', async ()=>{
+  const it={
+    id:uid(), date:$('#m_date').value || new Date().toISOString().slice(0,10),
+    place:$('#m_place').value.trim(), text:$('#m_text').value.trim(),
+    photo: await (async()=>{ const f=$('#m_photo'); if(f.files && f.files[0]) return await fileToDataUrl(f.files[0]); return null; })(),
+    createdAt:new Date().toISOString()
+  };
+  const list=load(MKEY); list.push(it); save(MKEY,list);
+  ['#m_place','#m_text','#m_photo'].forEach(s=>$(s).value=''); renderMemories();
+});
+$('#mList').addEventListener('click', e=>{
+  if(e.target.classList.contains('m-del')){
+    const id=e.target.dataset.id; const list=load(MKEY).filter(x=>x.id!==id); save(MKEY,list); renderMemories();
+  }
+});
+$('#memExport').addEventListener('click', ()=>{
+  const list=load(MKEY); if(!list.length) return alert('Rien à exporter.');
+  const csv=toCSV(list,['id','date','place','text','createdAt']);
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='ADeux_souvenirs.csv'; a.click(); URL.revokeObjectURL(url);
+});
+renderMemories();
+
+/* defaults */
+['#r_date','#i_date','#m_date'].forEach(sel=>{ const el=$(sel); if(el) el.value=new Date().toISOString().slice(0,10); });
+</script>
+</body>
+</html>
