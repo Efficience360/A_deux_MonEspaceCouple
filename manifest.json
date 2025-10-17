@@ -1,23 +1,27 @@
 {
   "name": "À Deux - Application de couple",
   "short_name": "À Deux",
-  "description": "L’outil romantique et interactif pour s’épanouir à deux. Quiz, jeux, idées, souvenirs et tracker d’amour 💞",
+  "description": "L’application romantique et interactive pour s’épanouir à deux. Quiz, jeux, idées de dates, souvenirs et tracker d’amour 💞",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#FFFFFF",
   "theme_color": "#BD6549",
-  "orientation": "portrait",
+  "lang": "fr-FR",
+  "categories": ["lifestyle", "romance", "productivity"],
   "icons": [
     {
-      "src": "assets/icon192.png",
+      "src": "icon192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "assets/icon512.png",
+      "src": "icon512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
