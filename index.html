@@ -932,6 +932,13 @@ navButtons.forEach(btn => {
     return new Promise(resolve => showPrompt(message, resolve));
   };
 </script>
-
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+      .register('./sw.js')
+      .then(() => console.log("💞 Service Worker enregistré avec succès."))
+      .catch(err => console.log("Erreur Service Worker :", err));
+  }
+</script>
 </body>
 </html>
