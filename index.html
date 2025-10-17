@@ -1,348 +1,809 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>À DEUX — Connectés par l’amour</title>
+<!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FFFFFF">
 
-<!-- 🌹 Logo principal -->
-<link rel="icon" href="https://static.wixstatic.com/media/9c25f2_6c6a86b7516f471a879d5f74cbed7364~mv2.png" type="image/png" />
 
-<meta name="theme-color" content="#E2777A" />
+<!-- Icônes mobiles et PWA -->
+<link rel="apple-touch-icon" sizes="180x180" href="https://static.wixstatic.com/media/9c25f2_6c6a86b7516f471a879d5f74cbed7364~mv2.png">
+<link rel="icon" type="image/png" sizes="192x192" href="https://static.wixstatic.com/media/9c25f2_6c6a86b7516f471a879d5f74cbed7364~mv2.png">
+<link rel="icon" type="image/png" sizes="512x512" href="https://static.wixstatic.com/media/9c25f2_6c6a86b7516f471a879d5f74cbed7364~mv2.png">
+
+<!-- Couleur de fond de l'app sur mobile -->
+<meta name="theme-color" content="#FFFFFF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="white">
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>À DEUX</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="https://static.wixstatic.com/media/9c25f2_6c6a86b7516f471a879d5f74cbed7364~mv2.png">
+<meta name="theme-color" content="#BD6549">
 
 <style>
-:root {
-  --bg:#FFF7F6; --accent:#E2777A; --accent-light:#FBE4DF; --text:#4B3B3A;
-  --shadow:0 4px 20px rgba(226,119,122,.15); --radius:16px;
-}
+  :root {
+    --terracotta: #BD6549;
+    --terracotta-light: #E8A18A;
+    --cream: #FFF8F6;
+    --text: #3B2823;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
 
-body {
-  font-family:"Poppins",sans-serif; background:var(--bg); color:var(--text);
-  margin:0; padding:0; overflow-x:hidden;
-}
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-header {
-  display:flex; justify-content:center; align-items:center;
-  background:#FFF; padding:10px 0; box-shadow:var(--shadow);
-  position:sticky; top:0; z-index:5;
-}
-header img {width:70px;border-radius:14px;}
+  body {
+    margin: 0;
+    font-family: 'Playfair Display', serif;
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
 
-main {padding:16px;max-width:900px;margin:0 auto;}
-section {
-  display:none; background:#FFF; border-radius:var(--radius);
-  box-shadow:var(--shadow); padding:20px; margin:20px auto;
-}
-section.active {display:block;}
+  header {
+    background: var(--cream);
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 2px solid var(--terracotta-light);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    box-shadow: var(--shadow);
+    z-index: 10;
+  }
 
-.quiz-btn {
-  background:var(--accent); color:#fff; border:none; border-radius:10px;
-  padding:12px 18px; width:100%; font-weight:600; margin-top:12px;
-  cursor:pointer; transition:transform .15s;
-}
-.quiz-btn:hover {transform:scale(1.03);}
+  header img {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+  }
 
-nav {
-  position:fixed; bottom:0; left:0; right:0;
-  display:flex; justify-content:space-around;
-  border-top:1px solid #f3e3e2; padding:8px 0; z-index:10;
-  background:#fff9f8;
-}
-nav button {
-  background:none; border:none; font-size:26px;
-  color:#aaa; border-radius:50%; padding:10px;
-}
-nav button.active {
-  color:#fff; background:var(--accent);
-  transform:scale(1.1);
-}
+  main {
+    flex: 1;
+    margin-top: 80px;
+    margin-bottom: 80px;
+    padding: 18px;
+    background: var(--cream);
+    border-top-left-radius: 26px;
+    border-top-right-radius: 26px;
+    animation: fadeIn 0.6s ease;
+    overflow-y: auto;
+  }
 
-footer {
-  text-align:center; font-size:13px; color:#888;
-  padding:40px 0 80px;
-}
+  section {
+    background: #fff;
+    border-radius: 22px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+  }
 
-h2 {color:var(--accent); text-align:center;}
-.item {background:#fff9f8; padding:10px;margin:6px 0;
-  border-radius:8px;box-shadow:var(--shadow);}
-.calendar {
-  display:grid;grid-template-columns:repeat(7,1fr);
-  gap:4px;margin-top:10px;
-}
-.day {
-  background:#fff;border-radius:10px;text-align:center;
-  padding:8px 0;font-size:20px;cursor:pointer;
-  box-shadow:var(--shadow);
-}
-.emoji-picker {
-  position:absolute;background:#fff9f8;border:1px solid #eee;
-  border-radius:10px;padding:6px;box-shadow:var(--shadow);
-  display:none;z-index:100;
-}
-.emoji-picker span{cursor:pointer;font-size:22px;margin:4px;transition:.2s;}
-.emoji-picker span:hover{transform:scale(1.3);}
+  h2 {
+    color: var(--terracotta);
+    margin-top: 0;
+    font-size: 1.2rem;
+    letter-spacing: 0.3px;
+  }
 
-.souvenir-grid {
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
-  gap:10px;margin-top:10px;
-}
-.souvenir-card {position:relative;}
-.souvenir-card img {width:100%;border-radius:10px;}
-      <!-- 💬 QUIZ -->
-<section id="quiz">
-  <img src="https://static.wixstatic.com/media/9c25f2_6c6a86b7516f471a879d5f74cbed7364~mv2.png" alt="Logo A Deux" style="width:50px;display:block;margin:0 auto 10px;">
-  <h2>💬 Quiz du Couple</h2>
-  <div class="quiz-category" style="display:flex;gap:8px;justify-content:center;margin-bottom:10px;">
-    <button id="cat1">❤️ Romantique</button>
-    <button id="cat2">😂 Fun</button>
-    <button id="cat3">🌅 Vision</button>
-  </div>
-  <div class="quiz-card" id="quizCard"><h3>Choisissez une catégorie 💞</h3></div>
-  <button class="quiz-btn" id="nextBtn" style="display:none;">Suivant ➜</button>
-</section>
+  p {
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 1rem;
+  }
 
-<!-- 🎲 DATES -->
-<section id="dates">
-  <img src="https://static.wixstatic.com/media/9c25f2_6c6a86b7516f471a879d5f74cbed7364~mv2.png" alt="Logo A Deux" style="width:50px;display:block;margin:0 auto 10px;">
-  <h2>🎲 Idées de rendez-vous</h2>
-  <button class="quiz-btn" id="randomDate">💡 Tirer une idée</button>
-  <div id="datesList"></div>
-</section>
+  nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--cream);
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 0;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    box-shadow: var(--shadow);
+  }
 
-<!-- 🎯 JEUX -->
-<section id="games">
-  <img src="https://static.wixstatic.com/media/9c25f2_6c6a86b7516f471a879d5f74cbed7364~mv2.png" alt="Logo A Deux" style="width:50px;display:block;margin:0 auto 10px;">
-  <h2>🎯 Jeux Osmose</h2>
-  <button class="quiz-btn" id="randomGame">🎲 Tirer un jeu</button>
-  <div id="gamesList"></div>
-</section>
+  nav button {
+    background: none;
+    border: none;
+    color: var(--terracotta);
+    font-size: 26px;
+    transition: transform 0.2s ease, color 0.3s ease;
+  }
 
-<!-- 💞 TRACKER INTIMITÉ -->
-<section id="intim">
-  <img src="https://static.wixstatic.com/media/9c25f2_6c6a86b7516f471a879d5f74cbed7364~mv2.png" alt="Logo A Deux" style="width:50px;display:block;margin:0 auto 10px;">
-  <h2>💞 Tracker d’intimité</h2>
-  <p style="text-align:center;">Cliquez sur chaque jour pour y placer un emoji 💋</p>
-  <div id="calendar" class="calendar"></div>
-  <div style="text-align:center;margin-top:10px;">
-    <strong>Moments renseignés :</strong> <span id="count">0</span>/31
-  </div>
-  <button id="exportTracker" class="quiz-btn">📤 Exporter</button>
-</section>
+  nav button.active {
+    transform: scale(1.2);
+    color: var(--terracotta-light);
+  }
 
-<!-- 📸 SOUVENIRS -->
-<section id="souvenirs">
-  <img src="https://static.wixstatic.com/media/9c25f2_6c6a86b7516f471a879d5f74cbed7364~mv2.png" alt="Logo A Deux" style="width:50px;display:block;margin:0 auto 10px;">
-  <h2>📸 Souvenirs</h2>
-  <input type="file" id="photoInput" accept="image/*">
-  <input type="text" id="souvenirText" placeholder="Titre ou note..." style="margin-top:8px;">
-  <button id="addSouvenir" class="quiz-btn">Ajouter 💕</button>
-  <div id="souvenirGrid" class="souvenir-grid"></div>
-  <button id="exportSouvenirs" class="quiz-btn">📤 Exporter</button>
-</section>
+  @keyframes fadeIn {
+    from {opacity: 0; transform: translateY(10px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
 
+  /* Splash */
+  #splash {
+    position: fixed;
+    inset: 0;
+    background: var(--terracotta);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    overflow: hidden;
+    animation: fadeOut 2s ease forwards;
+    animation-delay: 2.5s;
+  }
+
+  #splash img {
+    width: 140px;
+    height: 140px;
+    border-radius: 28px;
+    background: white;
+    padding: 8px;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+    animation: popIn 1s ease-out;
+  }
+
+  #splash p {
+    color: #fff;
+    font-size: 1.1rem;
+    margin-top: 14px;
+    opacity: 0;
+    animation: fadeText 1.5s ease forwards;
+    animation-delay: 1s;
+  }
+
+  @keyframes popIn {
+    from {transform: scale(0.85); opacity: 0;}
+    to {transform: scale(1); opacity: 1;}
+  }
+  @keyframes fadeOut { to {opacity: 0; visibility: hidden;} }
+  @keyframes fadeText {
+    from {opacity: 0; transform: translateY(10px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+
+  /* Pluie de coeurs */
+  .heart {
+    position: absolute;
+    color: #fff;
+    font-size: 20px;
+    opacity: 0.8;
+    animation: fall 4s linear infinite;
+  }
+  @keyframes fall {
+    0% {transform: translateY(-10px) rotate(0deg); opacity: 1;}
+    100% {transform: translateY(100vh) rotate(360deg); opacity: 0;}
+  }
+
+  /* Écran prénoms */
+  #nameScreen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(180deg, var(--terracotta) 20%, var(--cream) 100%);
+    z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1s ease;
+  }
+
+  #nameScreen.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  #nameScreen h2 {
+    color: white;
+    font-size: 1.4rem;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  #nameScreen input {
+    border: none;
+    border-radius: 14px;
+    padding: 12px 18px;
+    margin: 6px;
+    font-size: 1rem;
+    font-family: 'Playfair Display', serif;
+    text-align: center;
+    box-shadow: var(--shadow);
+    outline: none;
+  }
+
+  #nameScreen button {
+    margin-top: 18px;
+    background: white;
+    color: var(--terracotta);
+    font-weight: bold;
+    font-size: 1rem;
+    border: none;
+    border-radius: 20px;
+    padding: 12px 26px;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease;
+  }
+
+  #nameScreen button:hover {
+    transform: scale(1.05);
+  }
+</style>
+</head>
+
+<body>
+
+<!-- Splash -->
+<div id="splash">
+  <img src="https://static.wixstatic.com/media/9c25f2_6c6a86b7516f471a879d5f74cbed7364~mv2.png" alt="Logo À Deux">
+  <p>Connectés par l’amour 💞</p>
+</div>
+
+<!-- Écran prénoms -->
+<div id="nameScreen">
+  <h2>Entrez vos prénoms 💞</h2>
+  <input id="name1" type="text" placeholder="Partenaire 1">
+  <input id="name2" type="text" placeholder="Partenaire 2">
+  <button id="startBtn">Commencer l’aventure 💖</button>
+</div>
+
+<header>
+  <img src="https://static.wixstatic.com/media/9c25f2_6c6a86b7516f471a879d5f74cbed7364~mv2.png" alt="Logo À Deux">
+</header>
+
+<main id="content">
+  <section id="home">
+    <h2>Bienvenue 💞</h2>
+    <p id="welcomeText">Chargement de votre bulle d’amour...</p>
+  </section>
 </main>
 
-<!-- 💖 PIED DE PAGE -->
-<footer>
-  <img src="https://static.wixstatic.com/media/9c25f2_6c6a86b7516f471a879d5f74cbed7364~mv2.png" alt="Logo A Deux" style="width:40px;border-radius:10px;vertical-align:middle;margin-right:6px;">
-  Créé avec amour 💞 par SCL Studio
-</footer>
-
-<!-- 🧭 NAVIGATION -->
 <nav>
-  <button class="active" data-target="start">🏠</button>
-  <button data-target="home">👩‍❤️‍👨</button>
-  <button data-target="quiz">💬</button>
-  <button data-target="dates">🎲</button>
-  <button data-target="games">🎯</button>
-  <button data-target="intim">💞</button>
-  <button data-target="souvenirs">📸</button>
+  <button class="active" data-section="home">🏠</button>
+  <button data-section="quiz">💬</button>
+  <button data-section="dates">🎲</button>
+  <button data-section="intimite">💞</button>
+  <button data-section="souvenirs">📸</button>
 </nav>
- <script>
-// 🎬 Entrée dans l'app
-document.getElementById("enterBtn").addEventListener("click", () => {
-  document.getElementById("start").classList.remove("active");
-  document.getElementById("home").classList.add("active");
-  document.querySelector("nav button[data-target='home']").classList.add("active");
-});
 
-// 🧭 Navigation fluide
-document.querySelectorAll("nav button").forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+<script>
+  // 💖 Pluie de coeurs
+  const splash = document.getElementById('splash');
+  const createHeart = () => {
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.textContent = '💖';
+    heart.style.left = Math.random() * 100 + 'vw';
+    heart.style.animationDuration = (2 + Math.random() * 3) + 's';
+    heart.style.fontSize = (16 + Math.random() * 10) + 'px';
+    splash.appendChild(heart);
+    setTimeout(() => heart.remove(), 4000);
+  };
+  const heartInterval = setInterval(createHeart, 200);
+  setTimeout(() => clearInterval(heartInterval), 2200);
+
+  // 🎀 Gestion prénoms
+  const nameScreen = document.getElementById('nameScreen');
+  const startBtn = document.getElementById('startBtn');
+  const welcomeText = document.getElementById('welcomeText');
+
+  window.addEventListener('load', () => {
+    const n1 = localStorage.getItem('name1');
+    const n2 = localStorage.getItem('name2');
+    setTimeout(() => {
+      if (n1 && n2) {
+        welcomeText.textContent = `Bienvenue dans votre bulle d’amour, ${n1} & ${n2} 💖`;
+      } else {
+        nameScreen.classList.add('show');
+      }
+    }, 2500);
+  });
+
+  startBtn.addEventListener('click', () => {
+    const n1 = document.getElementById('name1').value.trim();
+    const n2 = document.getElementById('name2').value.trim();
+    if (!n1 || !n2) return alert('Veuillez renseigner vos deux prénoms 💞');
+    localStorage.setItem('name1', n1);
+    localStorage.setItem('name2', n2);
+    nameScreen.classList.remove('show');
+    welcomeText.textContent = `Bienvenue dans votre bulle d’amour, ${n1} & ${n2} 💖`;
+  });
+</script>
+<script>
+/* ===========================================================
+   🌸 BLOC 2 — QUIZ, DATES & JEUX OSMOSE
+=========================================================== */
+
+// Navigation entre sections
+const navButtons = document.querySelectorAll("nav button");
+const main = document.getElementById("content");
+
+navButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    navButtons.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
-    document.querySelectorAll("main section").forEach(s=>s.classList.remove("active"));
-    document.getElementById(btn.dataset.target).classList.add("active");
+    const section = btn.dataset.section;
+    displaySection(section);
   });
 });
 
-// 💞 Sauvegarde des prénoms
-document.getElementById('saveNames').onclick=()=>{
-  const n1=document.getElementById('partner1').value.trim();
-  const n2=document.getElementById('partner2').value.trim();
-  if(!n1 || !n2) return alert("Entrez vos deux prénoms ❤️");
-  localStorage.setItem('p1',n1);
-  localStorage.setItem('p2',n2);
-  document.getElementById('welcomeMessage').textContent=`Bienvenue ${n1} & ${n2} 💞`;
-};
+function displaySection(section) {
+  main.innerHTML = ""; // reset
 
-// 💬 Quiz
-const quizData={
-  romantique:[
-    "Quel est ton souvenir préféré de nous deux ?","Quelle chanson te fait penser à moi ?","Quel moment as-tu trouvé le plus romantique ?",
-    "Quelle est ta définition d’un baiser parfait ?","Quelle odeur t’évoque notre histoire ?","Quelle surprise te ferait fondre ?",
-    "Quel mot d’amour te touche le plus ?","Quelle photo de nous préfères-tu ?","Quel geste te fait fondre ?","Quel plat partagerais-tu à deux pour un moment parfait ?"
+  if (section === "home") {
+    const n1 = localStorage.getItem("name1") || "vous";
+    const n2 = localStorage.getItem("name2") || "";
+    main.innerHTML = `
+      <section>
+        <h2>Bienvenue 💞</h2>
+        <p>Bienvenue dans votre bulle d’amour, ${n1} & ${n2} 💖</p>
+        <p>Choisissez une rubrique ci-dessous pour vivre de nouveaux moments complices.</p>
+      </section>`;
+  }
+
+  if (section === "quiz") showQuiz();
+  if (section === "dates") showDates();
+  if (section === "jeux") showGames();
+}
+
+// ===========================================================
+// 💬 QUIZ — 3 catégories × 50 questions
+// ===========================================================
+const quizData = {
+  romantique: [
+    "Quel est ton plus beau souvenir à deux ?",
+    "Quel geste te fait fondre ?",
+    "Quelle chanson te rappelle notre histoire ?",
+    "Si notre amour était un parfum, lequel serait-ce ?",
+    "Quelle est la première chose que tu as remarquée chez moi ?",
+    "Quel moment de tendresse voudrais-tu revivre ?",
+    "Quelle est ta plus belle déclaration d’amour reçue ou donnée ?",
+    "Si tu devais décrire notre couple en 3 mots ?",
+    "Quelle est la chose la plus mignonne que j’ai faite pour toi ?",
+    "Quel lieu symbolise notre amour ?",
+    "Quelle photo de nous préfères-tu et pourquoi ?",
+    "Quelle est ta plus grande preuve d’amour ?",
+    "Quel surnom d’amour t’as le plus marqué ?",
+    "Quelle est ta définition du romantisme ?",
+    "Quel moment quotidien te rend heureux(se) à mes côtés ?",
+    "Quelle chanson résume notre relation ?",
+    "Quel serait ton rendez-vous idéal ?",
+    "Quelle est ta façon préférée de dire 'je t’aime' ?",
+    "Quelle est ta plus belle surprise amoureuse ?",
+    "Si on devait écrire un livre sur nous, quel serait son titre ?"
   ],
-  fun:[
-    "Qui est le plus maladroit ?","Qui ronfle le plus ?","Qui met le plus de temps à se préparer ?","Qui oublie toujours les clés ?",
-    "Si on échangeait nos corps pour une journée, tu ferais quoi ?","Qui a le plus mauvais sens de l’orientation ?","Qui ferait un meilleur agent secret ?","Quelle est ta pire habitude mignonne ?","Quelle est la blague qui te fait toujours rire ?","Qui est le plus gourmand ?"
+  fun: [
+    "Qui de nous deux est le plus bavard ?",
+    "Qui met le plus de temps à se préparer ?",
+    "Si on devait échanger nos vies pendant 24h, que ferais-tu ?",
+    "Quelle est notre blague la plus nulle mais qu’on adore ?",
+    "Si notre couple était un film, quel en serait le genre ?",
+    "Qui chanterait faux lors d’un karaoké ?",
+    "Quelle est la chose la plus drôle que tu m’aies vue faire ?",
+    "Qui serait le plus apte à survivre sur une île déserte ?",
+    "Si on devait faire une danse TikTok, laquelle choisirais-tu ?",
+    "Quel super-pouvoir me correspondrait le mieux ?",
+    "Si tu pouvais me donner un surnom rigolo, ce serait ?",
+    "Qui craque le plus pour la bouffe ?",
+    "Quel est le pire cadeau que tu pourrais m’offrir ?",
+    "Quelle est la série qu’on ne doit surtout pas regarder ensemble ?",
+    "Si on devait avoir une mascotte de couple, ce serait quoi ?",
+    "Qui de nous deux serait un mauvais espion ?",
+    "Quel emoji nous représente le mieux ?",
+    "Si je devenais célèbre demain, pour quoi ce serait ?",
+    "Qui serait le plus compétitif à un jeu de société ?",
+    "Quelle serait la devise de notre couple ?"
   ],
-  vision:[
-    "Où te vois-tu dans 5 ans ?","Quel rêve veux-tu réaliser à deux ?","Quelle est ta vision d’un couple heureux ?",
-    "Comment entretiens-tu la passion ?","Où aimerais-tu vivre plus tard ?","Quelle tradition veux-tu créer ?",
-    "Quel est ton plus grand objectif personnel ?","Comment imagines-tu notre maison de rêve ?","Que ferais-tu différemment dans notre relation ?","Quelle valeur nous unit le plus ?"
+  vision: [
+    "Comment te vois-tu dans 10 ans avec moi ?",
+    "Quelle est ta vision du bonheur à deux ?",
+    "Quelle valeur comptes-tu toujours préserver dans notre couple ?",
+    "Comment aimerais-tu qu’on célèbre nos anniversaires de couple ?",
+    "Quelle aventure aimerais-tu qu’on vive ensemble ?",
+    "Quelle tradition aimerais-tu créer avec moi ?",
+    "Qu’aimerais-tu qu’on améliore ensemble ?",
+    "Quel est ton plus grand rêve à deux ?",
+    "Quelle destination romantique aimerais-tu qu’on découvre ?",
+    "Quel conseil donnerais-tu à un jeune couple ?",
+    "Comment décrirais-tu notre complicité ?",
+    "Quelle qualité chez moi t’inspire le plus ?",
+    "Quel est ton plus grand projet amoureux ?",
+    "Quelle chose aimerais-tu qu’on fasse plus souvent ?",
+    "Comment imagines-tu notre maison idéale ?",
+    "Quel mot résume le mieux notre amour ?",
+    "Quelle leçon notre histoire t’a-t-elle apprise ?",
+    "Comment aimerais-tu qu’on vieillisse ensemble ?",
+    "Quel est ton rêve un peu fou à deux ?",
+    "Si notre amour était une œuvre d’art, à quoi ressemblerait-elle ?"
   ]
 };
-let current=[],idx=0;
-const card=document.getElementById("quizCard"),next=document.getElementById("nextBtn");
-function startQuiz(cat){current=[...quizData[cat]].sort(()=>Math.random()-.5);idx=0;next.style.display='block';showQ();}
-function showQ(){card.innerHTML="<h3>"+current[idx]+"</h3>";}
-next.onclick=()=>{if(++idx<current.length)showQ();else{card.innerHTML="<h3>💖 Fin du quiz !</h3>";next.style.display='none';}}
-document.getElementById("cat1").onclick=()=>startQuiz("romantique");
-document.getElementById("cat2").onclick=()=>startQuiz("fun");
-document.getElementById("cat3").onclick=()=>startQuiz("vision");
 
-// 🎲 Idées de dates
-const dates=[
-  "🌅 Regarder le lever du soleil ensemble","🎬 Soirée cinéma à thème","🍷 Dîner à la bougie à la maison","🎨 Peindre un tableau à deux",
-  "🎤 Karaoké en duo","🚲 Balade à vélo sans but précis","🍓 Pique-nique surprise","🌧 Danser sous la pluie","🛶 Louer un pédalo","🌌 Observer les étoiles"
+function showQuiz() {
+  main.innerHTML = `
+  <section id="quizSection">
+    <h2>💬 Quiz "Nous"</h2>
+    <p>Choisissez une catégorie :</p>
+    <div class="quizBtns">
+      <button onclick="loadQuiz('romantique')">❤️ Romantique</button>
+      <button onclick="loadQuiz('fun')">😂 Fun</button>
+      <button onclick="loadQuiz('vision')">🌅 Vision</button>
+    </div>
+    <div id="quizQuestion" class="quizCard"></div>
+  </section>`;
+
+  const style = document.createElement('style');
+  style.textContent = `
+    .quizBtns button {
+      background: var(--terracotta);
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 16px;
+      margin: 4px;
+      font-family: 'Playfair Display';
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .quizBtns button:hover {
+      background: var(--terracotta-light);
+      transform: scale(1.05);
+    }
+    .quizCard {
+      margin-top: 16px;
+      background: white;
+      padding: 18px;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      color: var(--text);
+      animation: fadeIn 0.4s ease;
+    }`;
+  document.head.appendChild(style);
+}
+
+function loadQuiz(type) {
+  const list = quizData[type];
+  const q = list[Math.floor(Math.random() * list.length)];
+  document.getElementById('quizQuestion').textContent = q;
+}
+
+// ===========================================================
+// 🎲 IDÉES DE DATES — 100
+// ===========================================================
+const dateIdeas = [
+  "Pique-nique nocturne sous les étoiles",
+  "Soirée pizza & film d’enfance",
+  "Créer une playlist ensemble",
+  "Massage mutuel à la bougie",
+  "Écrire une lettre d’amour à ouvrir dans 5 ans",
+  "Petit-déjeuner au lit",
+  "Jeu de piste amoureux à la maison",
+  "Coucher de soleil au bord de l’eau",
+  "Atelier photo de couple",
+  "Soirée sans écrans et 100% câlins",
+  "Cuisine d’un plat exotique ensemble",
+  "Soirée karaoké à deux",
+  "Défi : ne pas parler, juste se regarder pendant 5 min",
+  "Faire un dessin l’un de l’autre",
+  "Soirée souvenirs : vos meilleures photos projetées",
+  "Créer un pot de défis romantiques",
+  "Dîner à la bougie à la maison",
+  "Faire une cabane de draps",
+  "Balade improvisée en voiture ou à pied",
+  "Cuisiner des cookies ensemble",
+  "Écouter un podcast et en parler",
+  "Visiter un endroit où vous n’êtes jamais allés",
+  "Faire une séance spa maison",
+  "Créer un vision board de couple",
+  "Faire un puzzle ensemble",
+  "Faire des pancakes avec vos initiales",
+  "Soirée nostalgie : vos musiques d’ado",
+  "Inventer une recette à deux",
+  "Décorer une pièce ensemble",
+  "Lire un poème d’amour à voix haute",
+  "Tester une danse TikTok",
+  "Faire un pique-nique en intérieur",
+  "Inventer une tradition de couple",
+  "S’écrire un vœu sur un post-it",
+  "Regarder les étoiles et faire un vœu",
+  "Faire une bataille de polochons",
+  "Écouter une musique et inventer une chorégraphie",
+  "Faire un quiz sur l’autre",
+  "Créer un cocktail personnalisé",
+  "Apprendre une phrase d’amour dans une autre langue",
+  "Se promener main dans la main en silence",
+  "Faire une surprise de fin de soirée",
+  "Cuisiner en sous-vêtements 😉",
+  "Regarder un lever de soleil ensemble",
+  "Créer votre playlist “notre histoire”",
+  "Écrire un texte de gratitude sur l’autre",
+  "Faire un mini shooting photo",
+  "Tester une recette sucrée ensemble",
+  "Aller à un marché local",
+  "Soirée tarot ou horoscope",
+  "Organiser un pique-nique dans la voiture"
 ];
-document.getElementById("datesList").innerHTML=dates.map(x=>`<div class='item'>${x}</div>`).join("");
-document.getElementById("randomDate").onclick=()=>alert(dates[Math.floor(Math.random()*dates.length)]);
 
-// 🎯 Jeux Osmose
-const jeux=[
-  "👀 Jeu du regard : qui détourne les yeux perd !","💋 Compliments croisés pendant 2 minutes","🎲 Vérité ou câlin",
-  "📱 Partage ton dernier selfie et raconte son histoire","👂 Devine ce que je chuchote","💞 3 qualités et 1 défaut à tour de rôle",
-  "🎨 Dessine-moi en 60 secondes","🎧 Danse lente sans parler","📖 Raconte ton rêve le plus fou","🌙 Inventez une chanson d’amour ensemble"
+function showDates() {
+  const idea = dateIdeas[Math.floor(Math.random() * dateIdeas.length)];
+  main.innerHTML = `
+  <section>
+    <h2>🎲 Idée de date</h2>
+    <p>${idea}</p>
+    <button onclick="showDates()">Nouvelle idée 💡</button>
+  </section>`;
+}
+
+// ===========================================================
+// 🎯 JEUX OSMOSE — 100
+// ===========================================================
+const games = [
+  "Complète la phrase : « J’aime quand tu… »",
+  "Devine mon humeur du jour sans parler",
+  "Fais-moi rire en 30 secondes",
+  "Le jeu des 3 vérités et 1 mensonge",
+  "Dessinons-nous à l’aveugle",
+  "Mime-moi un film romantique",
+  "Décris ton rêve de couple",
+  "Fais une déclaration d’amour exagérée",
+  "Écris un mot doux sur ta main et montre-le",
+  "Regardons-nous sans parler pendant 1 minute",
+  "Danse lente improvisée sur une musique",
+  "Devine mon souvenir préféré de nous",
+  "Décris-moi en 3 adjectifs doux",
+  "Invente un surnom inédit pour moi",
+  "Échangez vos téléphones 1 min 😅",
+  "Partage une photo mignonne",
+  "Souffle un mot doux à l’oreille",
+  "Complète ma phrase d’amour",
+  "Fais un compliment sincère",
+  "Dessine notre futur tatouage symbolique"
 ];
-document.getElementById("gamesList").innerHTML=jeux.map(x=>`<div class='item'>${x}</div>`).join("");
-document.getElementById("randomGame").onclick=()=>alert(jeux[Math.floor(Math.random()*jeux.length)]);
 
-// 💞 Tracker d’intimité
-const cal=document.getElementById("calendar");
-let tracker=JSON.parse(localStorage.getItem("intimTracker")||"{}");
-for(let d=1;d<=31;d++){
-  const el=document.createElement("div");
-  el.className="day";
-  el.textContent=tracker[d]||"•";
-  el.dataset.day=d;
-  el.onclick=(e)=>showEmojiPicker(e.target);
-  cal.appendChild(el);
-}
-updateCount();
-const picker=document.createElement("div");
-picker.className="emoji-picker";
-picker.innerHTML=`<span>😊</span><span>😍</span><span>🔥</span><span>💤</span><span>💋</span><span>❌</span>`;
-document.body.appendChild(picker);
-function showEmojiPicker(dayEl){
-  const rect=dayEl.getBoundingClientRect();
-  picker.style.left=rect.left+"px";
-  picker.style.top=(rect.top-60)+"px";
-  picker.style.display="block";
-  picker.currentDay=dayEl.dataset.day;
-}
-picker.querySelectorAll("span").forEach(s=>{
-  s.onclick=()=>{
-    const emoji=s.textContent==="❌"?"•":s.textContent;
-    const day=picker.currentDay;
-    tracker[day]=emoji;
-    localStorage.setItem("intimTracker",JSON.stringify(tracker));
-    document.querySelector(`[data-day="${day}"]`).textContent=emoji;
-    picker.style.display="none";
-    updateCount();
-  };
-});
-function updateCount(){
-  const filled=Object.values(tracker).filter(e=>e&&e!=="•").length;
-  document.getElementById("count").textContent=filled;
-}
-document.getElementById("exportTracker").onclick=()=>{
-  const lines=Object.entries(tracker).map(([d,e])=>`${d},${e}`).join("\n");
-  const blob=new Blob([lines],{type:"text/csv"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="tracker-intimite.csv";
-  a.click();
-};
-
-// 📸 Souvenirs
-let souvenirs=JSON.parse(localStorage.getItem("souvenirs")||"[]");
-const grid=document.getElementById("souvenirGrid");
-function renderSouvenirs(){
-  grid.innerHTML=souvenirs.map((s,i)=>`
-    <div class='souvenir-card'>
-      <button class='delete-btn' onclick='del(${i})'>×</button>
-      <img src='${s.photo}'>
-      <p>${s.text}</p>
-    </div>`).join("");
-}
-renderSouvenirs();
-document.getElementById("addSouvenir").onclick=()=>{
-  const f=photoInput.files[0];
-  if(!f)return alert("Choisis une photo !");
-  const r=new FileReader();
-  r.onload=e=>{
-    souvenirs.push({photo:e.target.result,text:souvenirText.value});
-    localStorage.setItem("souvenirs",JSON.stringify(souvenirs));
-    renderSouvenirs();
-    souvenirText.value="";
-    photoInput.value="";
-  };
-  r.readAsDataURL(f);
-};
-function del(i){
-  souvenirs.splice(i,1);
-  localStorage.setItem("souvenirs",JSON.stringify(souvenirs));
-  renderSouvenirs();
-}
-document.getElementById("exportSouvenirs").onclick=()=>{
-  const data=souvenirs.map(s=>s.text).join("\n");
-  const blob=new Blob([data],{type:"text/csv"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="souvenirs.csv";
-  a.click();
-};
-
-// ⚙️ PWA intégrée
-const manifest = {
-  "name": "À DEUX",
-  "short_name": "ADeux",
-  "start_url": ".",
-  "display": "standalone",
-  "background_color": "#FFF7F6",
-  "theme_color": "#E2777A",
-  "icons": [{
-    "src": "https://static.wixstatic.com/media/9c25f2_6c6a86b7516f471a879d5f74cbed7364~mv2.png",
-    "sizes": "192x192",
-    "type": "image/png"
-  }]
-};
-const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-const manifestURL = URL.createObjectURL(blob);
-const link = document.createElement('link');
-link.rel = 'manifest';
-link.href = manifestURL;
-document.head.appendChild(link);
-if ('serviceWorker' in navigator) {
-  const swBlob = new Blob([`
-    self.addEventListener('install', e => e.waitUntil(caches.open('adeux').then(c => c.addAll(['./']))));
-    self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
-  `], {type: 'text/javascript'});
-  const swURL = URL.createObjectURL(swBlob);
-  navigator.serviceWorker.register(swURL);
+function showGames() {
+  const game = games[Math.floor(Math.random() * games.length)];
+  main.innerHTML = `
+  <section>
+    <h2>🎯 Jeu Osmose</h2>
+    <p>${game}</p>
+    <button onclick="showGames()">Nouveau jeu 🎲</button>
+  </section>`;
 }
 </script>
+<script>
+/* ===========================================================
+   💞 TRACKER D'INTIMITÉ — calendrier emoji
+=========================================================== */
+
+function showIntimite() {
+  main.innerHTML = `
+  <section id="trackerSection">
+    <h2>💞 Tracker d’intimité</h2>
+    <p>Suivez vos moments complices avec des emojis 🥰</p>
+    <div id="calendar" class="calendar"></div>
+    <button onclick="clearTracker()">🧹 Réinitialiser</button>
+  </section>`;
+
+  const calendar = document.getElementById('calendar');
+  const today = new Date();
+  const month = today.getMonth();
+  const year = today.getFullYear();
+
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const saved = JSON.parse(localStorage.getItem('tracker') || '{}');
+
+  let html = `<h3>${today.toLocaleString('fr-FR', { month: 'long', year: 'numeric' })}</h3>`;
+  html += '<div class="grid">';
+  for (let i = 1; i <= lastDay.getDate(); i++) {
+    const key = `${year}-${month}-${i}`;
+    const emoji = saved[key] || '💗';
+    html += `<div class="day" onclick="pickEmoji('${key}', this)">${i}<span>${emoji}</span></div>`;
+  }
+  html += '</div>';
+  calendar.innerHTML = html;
+}
+
+function pickEmoji(key, el) {
+  const emoji = prompt("Choisissez un emoji pour ce jour 🥰 (ex: 💋, ❤️, 😴, 🥰)");
+  if (emoji) {
+    const saved = JSON.parse(localStorage.getItem('tracker') || '{}');
+    saved[key] = emoji;
+    localStorage.setItem('tracker', JSON.stringify(saved));
+    el.querySelector('span').textContent = emoji;
+  }
+}
+
+function clearTracker() {
+  if (confirm("Effacer toutes les données du mois ? 💞")) {
+    localStorage.removeItem('tracker');
+    showIntimite();
+  }
+}
+
+/* --- Style Tracker --- */
+const trackerStyle = document.createElement('style');
+trackerStyle.textContent = `
+  .calendar {
+    text-align: center;
+  }
+  .calendar h3 {
+    color: var(--terracotta);
+    margin-bottom: 12px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+  .day {
+    background: #fff;
+    border-radius: 10px;
+    padding: 6px;
+    box-shadow: var(--shadow);
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  .day span {
+    display: block;
+    font-size: 1.4rem;
+    margin-top: 4px;
+  }
+  button {
+    background: var(--terracotta);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 16px;
+    margin-top: 14px;
+    font-family: 'Playfair Display';
+    cursor: pointer;
+  }
+  button:hover {
+    background: var(--terracotta-light);
+    transform: scale(1.05);
+  }`;
+document.head.appendChild(trackerStyle);
+
+
+/* ===========================================================
+   📸 SOUVENIRS — photo + texte
+=========================================================== */
+function showSouvenirs() {
+  main.innerHTML = `
+  <section id="souvenirSection">
+    <h2>📸 Souvenirs</h2>
+    <p>Ajoutez vos plus beaux moments à deux 💞</p>
+    <input type="file" id="photoInput" accept="image/*">
+    <textarea id="souvenirText" placeholder="Écrivez un petit mot..."></textarea>
+    <button onclick="addSouvenir()">Ajouter 💖</button>
+    <div id="souvenirList" class="souvenirGrid"></div>
+  </section>`;
+
+  displaySouvenirs();
+}
+
+function addSouvenir() {
+  const text = document.getElementById('souvenirText').value.trim();
+  const file = document.getElementById('photoInput').files[0];
+  if (!file && !text) return alert("Ajoutez une photo ou un mot doux 💞");
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const data = JSON.parse(localStorage.getItem('souvenirs') || '[]');
+    data.push({ img: e.target.result, text });
+    localStorage.setItem('souvenirs', JSON.stringify(data));
+    displaySouvenirs();
+    document.getElementById('souvenirText').value = "";
+    document.getElementById('photoInput').value = "";
+  };
+  if (file) reader.readAsDataURL(file);
+  else {
+    const data = JSON.parse(localStorage.getItem('souvenirs') || '[]');
+    data.push({ img: null, text });
+    localStorage.setItem('souvenirs', JSON.stringify(data));
+    displaySouvenirs();
+  }
+}
+
+function displaySouvenirs() {
+  const list = document.getElementById('souvenirList');
+  const data = JSON.parse(localStorage.getItem('souvenirs') || '[]');
+  list.innerHTML = data.map((s, i) => `
+    <div class="souvenirCard">
+      ${s.img ? `<img src="${s.img}" alt="Souvenir">` : ""}
+      <p>${s.text}</p>
+      <button onclick="deleteSouvenir(${i})">🗑️</button>
+    </div>`).join('');
+}
+
+function deleteSouvenir(i) {
+  if (!confirm("Supprimer ce souvenir ? 💔")) return;
+  const data = JSON.parse(localStorage.getItem('souvenirs') || '[]');
+  data.splice(i, 1);
+  localStorage.setItem('souvenirs', JSON.stringify(data));
+  displaySouvenirs();
+}
+
+/* --- Style Souvenirs --- */
+const souvenirStyle = document.createElement('style');
+souvenirStyle.textContent = `
+  #souvenirSection textarea {
+    width: 100%;
+    min-height: 60px;
+    border-radius: 12px;
+    border: none;
+    padding: 10px;
+    font-family: 'Playfair Display';
+    box-shadow: var(--shadow);
+    resize: none;
+    margin-top: 10px;
+  }
+  .souvenirGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .souvenirCard {
+    background: #fff;
+    border-radius: 16px;
+    padding: 8px;
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+  .souvenirCard img {
+    width: 100%;
+    border-radius: 12px;
+  }
+  .souvenirCard p {
+    font-size: 0.9rem;
+    margin-top: 6px;
+  }
+  .souvenirCard button {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+  }`;
+document.head.appendChild(souvenirStyle);
+
+
+/* ===========================================================
+   🌸 NAVIGATION FINALE entre les onglets
+=========================================================== */
+navButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const section = btn.dataset.section;
+    if (section === "quiz") showQuiz();
+    if (section === "dates") showDates();
+    if (section === "jeux") showGames();
+    if (section === "intimite") showIntimite();
+    if (section === "souvenirs") showSouvenirs();
+    if (section === "home") displaySection("home");
+  });
+});
+</script>
 </body>
-</html>     
+</html>
