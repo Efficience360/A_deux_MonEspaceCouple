@@ -611,7 +611,8 @@ function showGames() {
 </script>
 <script>
 /* /* ============================================================
-   💞 TRACKER D'INTIMITÉ — calendrier emoji amélioré
+   /* ============================================================
+   💞 TRACKER D'INTIMITÉ — calendrier emoji amélioré et centré
 =========================================================== */
 
 function showIntimite() {
@@ -629,15 +630,16 @@ function showIntimite() {
   const year = today.getFullYear();
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
-
   const saved = JSON.parse(localStorage.getItem('tracker') || '{}');
+
   let html = `<h3>${today.toLocaleString('fr-FR', { month: 'long', year: 'numeric' })}</h3>`;
   html += '<div class="calendar-grid">';
 
-  // Calcul du décalage pour le premier jour du mois
+  // Décalage du premier jour (Lun = 1, Dim = 0)
   const offset = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
   for (let i = 0; i < offset; i++) html += `<div class="day empty"></div>`;
 
+  // Jours du mois
   for (let i = 1; i <= lastDay.getDate(); i++) {
     const key = `${year}-${month}-${i}`;
     const emoji = saved[key] || "🤍";
@@ -647,15 +649,17 @@ function showIntimite() {
              </div>`;
   }
 
+  // Compléter à 42 cases (7 colonnes × 6 lignes)
+  const totalCells = offset + lastDay.getDate();
+  for (let i = totalCells; i < 42; i++) html += `<div class="day empty"></div>`;
+
   html += '</div>';
   calendar.innerHTML = html;
 
   // Gestion du clic sur un jour
   document.querySelectorAll('.day').forEach(day => {
     if (!day.classList.contains('empty')) {
-      day.addEventListener('click', () => {
-        openEmojiPicker(day);
-      });
+      day.addEventListener('click', () => openEmojiPicker(day));
     }
   });
 }
@@ -709,20 +713,26 @@ trackerStyle.textContent = `
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
   }
 
   .calendar h3 {
     color: var(--terracotta, #BD6549);
     margin-bottom: 12px;
     font-family: 'Playfair Display', serif;
+    text-transform: capitalize;
   }
 
+  /* Grille fixée à 7 colonnes × 6 lignes */
   .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 46px);
+    grid-template-rows: repeat(6, 46px);
     gap: 8px;
     justify-content: center;
+    align-content: center;
     margin: 10px auto;
+    width: fit-content;
   }
 
   .day {
@@ -732,9 +742,14 @@ trackerStyle.textContent = `
     font-size: 0.9rem;
     cursor: pointer;
     text-align: center;
-    padding: 6px 2px;
     transition: transform 0.2s ease, background 0.3s ease;
     position: relative;
+    width: 46px;
+    height: 46px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   .day:hover {
@@ -753,6 +768,7 @@ trackerStyle.textContent = `
     margin-top: 2px;
   }
 
+  /* Sélecteur d’emoji */
   .emoji-picker {
     position: absolute;
     top: -55px;
@@ -780,6 +796,7 @@ trackerStyle.textContent = `
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* Bouton principal */
   button {
     background: var(--terracotta, #BD6549);
     color: white;
@@ -797,6 +814,7 @@ trackerStyle.textContent = `
   }
 `;
 document.head.appendChild(trackerStyle);
+
 
 
 
