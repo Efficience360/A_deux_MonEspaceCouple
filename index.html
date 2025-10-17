@@ -807,54 +807,130 @@ navButtons.forEach(btn => {
   });
 });
 </script>
-<!-- 💞 Boîte de dialogue personnalisée -->
-<div id="customPopup" class="popup hidden">
-  <div class="popup-content">
-    <p id="popupMessage"></p>
-    <button onclick="closePopup()">OK</button>
+<!-- 💞 Popup personnalisée "À Deux" -->
+<div id="adeuxPopup" class="adeux-popup hidden">
+  <div class="adeux-popup-content">
+    <p id="adeuxPopupMessage"></p>
+    <div class="adeux-popup-buttons">
+      <button id="adeuxOk">OK</button>
+      <button id="adeuxCancel" class="hidden">Annuler</button>
+    </div>
   </div>
 </div>
 
 <style>
-  .popup {
+  .adeux-popup {
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
     background: rgba(0,0,0,0.5);
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     z-index: 9999;
   }
-  .popup.hidden { display: none; }
-  .popup-content {
+  .adeux-popup.hidden { display: none; }
+  .adeux-popup-content {
     background: #fff;
-    padding: 20px;
-    border-radius: 18px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    color: #5a2e22;
+    padding: 24px;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     text-align: center;
+    width: 80%;
+    max-width: 320px;
     font-family: 'Playfair Display', serif;
+    animation: fadeIn 0.3s ease;
   }
-  .popup-content button {
-    margin-top: 12px;
+  .adeux-popup-buttons button {
     background: #BD6549;
     border: none;
-    color: #fff;
-    padding: 8px 16px;
+    color: white;
+    padding: 10px 20px;
+    margin: 10px 6px 0;
     border-radius: 10px;
     cursor: pointer;
+    font-family: 'Playfair Display', serif;
   }
-  .popup-content button:hover {
-    background: #a24f3a;
+  .adeux-popup-buttons button:hover {
+    background: #a45038;
+  }
+  @keyframes fadeIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
   }
 </style>
 
 <script>
-function showPopup(message) {
-  document.getElementById('popupMessage').innerText = message;
-  document.getElementById('customPopup').classList.remove('hidden');
-}
-function closePopup() {
-  document.getElementById('customPopup').classList.add('hidden');
-}
+  // Popup simple (remplace alert)
+  function showPopup(message, callback) {
+    const popup = document.getElementById("adeuxPopup");
+    const msg = document.getElementById("adeuxPopupMessage");
+    const ok = document.getElementById("adeuxOk");
+    const cancel = document.getElementById("adeuxCancel");
+
+    msg.innerHTML = message;
+    cancel.classList.add("hidden"); // masqué par défaut
+    popup.classList.remove("hidden");
+
+    ok.onclick = () => {
+      popup.classList.add("hidden");
+      if (callback) callback(true);
+    };
+  }
+
+  // Popup avec validation (remplace confirm)
+  function showConfirm(message, callback) {
+    const popup = document.getElementById("adeuxPopup");
+    const msg = document.getElementById("adeuxPopupMessage");
+    const ok = document.getElementById("adeuxOk");
+    const cancel = document.getElementById("adeuxCancel");
+
+    msg.innerHTML = message;
+    cancel.classList.remove("hidden");
+    popup.classList.remove("hidden");
+
+    ok.onclick = () => {
+      popup.classList.add("hidden");
+      callback(true);
+    };
+    cancel.onclick = () => {
+      popup.classList.add("hidden");
+      callback(false);
+    };
+  }
+
+  // Popup avec saisie (remplace prompt)
+  function showPrompt(message, callback) {
+    const popup = document.getElementById("adeuxPopup");
+    const msg = document.getElementById("adeuxPopupMessage");
+    const ok = document.getElementById("adeuxOk");
+    const cancel = document.getElementById("adeuxCancel");
+
+    msg.innerHTML = `${message}<br><input id='adeuxInput' style='margin-top:10px;padding:6px;border-radius:8px;border:1px solid #ccc;width:80%;font-family:Playfair Display;'>`;
+    cancel.classList.remove("hidden");
+    popup.classList.remove("hidden");
+
+    ok.onclick = () => {
+      const val = document.getElementById("adeuxInput").value;
+      popup.classList.add("hidden");
+      callback(val);
+    };
+    cancel.onclick = () => {
+      popup.classList.add("hidden");
+      callback(null);
+    };
+  }
+</script>
+<script>
+  // Redéfinition globale des popups natives vers les popups personnalisées 💞
+  window.alert = function(message) { showPopup(message); };
+  window.confirm = function(message) {
+    return new Promise(resolve => showConfirm(message, resolve));
+  };
+  window.prompt = function(message, _default = "") {
+    return new Promise(resolve => showPrompt(message, resolve));
+  };
 </script>
 
 </body>
