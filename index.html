@@ -29,7 +29,7 @@
   :root {
     --terracotta: #BD6549;
     --terracotta-light: #E8A18A;
-    --cream: #FFF8F6;
+    --pink: #FFB6C1;
     --text: #3B2823;
     --shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   }
@@ -324,10 +324,26 @@
     localStorage.setItem('name1', n1);
     localStorage.setItem('name2', n2);
     nameScreen.classList.remove('show');
-    welcomeText.textContent = `Bienvenue dans votre bulle d’amour, ${n1} & ${n2} 💖`;
-  });
+    // Message de bienvenue personnalisé
+welcomeText.innerHTML = `
+  <p class="welcome-title">Bienvenue dans votre bulle d’amour, <strong>${n1}</strong> & <strong>${n2}</strong> 💖</p>
+  <p class="welcome-desc">
+    Cette application est votre espace complice : un lieu où chaque sourire, chaque souvenir et chaque moment d’intimité se cultive à deux 🌸  
+    Explorez ensemble :
+  </p>
+  <ul class="welcome-list">
+    <li>💋 <strong>Le tracker d’intimité</strong> — suivez vos moments tendres au fil du mois</li>
+    <li>🎲 <strong>Les jeux</strong> — (re)découvrez-vous autrement et amusez-vous à deux</li>
+    <li>💞 <strong>Les quiz</strong> — testez votre complicité et vos affinités</li>
+    <li>🌹 <strong>Les idées de dates</strong> — créez des souvenirs inoubliables</li>
+  </ul>
+  <p class="welcome-end">Prenez une grande inspiration, et laissez la magie opérer... 💫</p>
+`;});
 </script>
 <script>
+
+
+
 /* ===========================================================
    🌸 BLOC 2 — QUIZ, DATES & JEUX OSMOSE
 =========================================================== */
@@ -594,8 +610,8 @@ function showGames() {
 }
 </script>
 <script>
-/* ===========================================================
-   💞 TRACKER D'INTIMITÉ — calendrier emoji
+/* /* ============================================================
+   💞 TRACKER D'INTIMITÉ — calendrier emoji amélioré
 =========================================================== */
 
 function showIntimite() {
@@ -611,32 +627,73 @@ function showIntimite() {
   const today = new Date();
   const month = today.getMonth();
   const year = today.getFullYear();
-
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
-  const saved = JSON.parse(localStorage.getItem('tracker') || '{}');
 
+  const saved = JSON.parse(localStorage.getItem('tracker') || '{}');
   let html = `<h3>${today.toLocaleString('fr-FR', { month: 'long', year: 'numeric' })}</h3>`;
-  html += '<div class="grid">';
+  html += '<div class="calendar-grid">';
+
+  // Calcul du décalage pour le premier jour du mois
+  const offset = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+  for (let i = 0; i < offset; i++) html += `<div class="day empty"></div>`;
+
   for (let i = 1; i <= lastDay.getDate(); i++) {
     const key = `${year}-${month}-${i}`;
-    const emoji = saved[key] || '💗';
-    html += `<div class="day" onclick="pickEmoji('${key}', this)">${i}<span>${emoji}</span></div>`;
+    const emoji = saved[key] || "🤍";
+    html += `<div class="day" data-key="${key}">
+               <span class="day-number">${i}</span>
+               <span class="emoji">${emoji}</span>
+             </div>`;
   }
+
   html += '</div>';
   calendar.innerHTML = html;
+
+  // Gestion du clic sur un jour
+  document.querySelectorAll('.day').forEach(day => {
+    if (!day.classList.contains('empty')) {
+      day.addEventListener('click', () => {
+        openEmojiPicker(day);
+      });
+    }
+  });
 }
 
-function pickEmoji(key, el) {
-  const emoji = prompt("Choisissez un emoji pour ce jour 🥰 (ex: 💋, ❤️, 😴, 🥰)");
-  if (emoji) {
-    const saved = JSON.parse(localStorage.getItem('tracker') || '{}');
-    saved[key] = emoji;
-    localStorage.setItem('tracker', JSON.stringify(saved));
-    el.querySelector('span').textContent = emoji;
-  }
+// 🩷 Choix d’un emoji avec une mini popup douce
+function openEmojiPicker(dayEl) {
+  const emojis = ["💖", "💋", "🔥", "🥰", "💤", "🙈", "💫", "🤍"];
+  const key = dayEl.dataset.key;
+
+  // Supprime les pickers existants
+  const oldPicker = document.getElementById('emojiPicker');
+  if (oldPicker) oldPicker.remove();
+
+  const picker = document.createElement('div');
+  picker.id = 'emojiPicker';
+  picker.className = 'emoji-picker';
+  emojis.forEach(e => {
+    const btn = document.createElement('button');
+    btn.textContent = e;
+    btn.onclick = () => {
+      selectEmoji(key, e, dayEl);
+      picker.remove();
+    };
+    picker.appendChild(btn);
+  });
+
+  dayEl.appendChild(picker);
 }
 
+// 💾 Sauvegarde de l’emoji choisi
+function selectEmoji(key, emoji, dayEl) {
+  const saved = JSON.parse(localStorage.getItem('tracker') || '{}');
+  saved[key] = emoji;
+  localStorage.setItem('tracker', JSON.stringify(saved));
+  dayEl.querySelector('.emoji').textContent = emoji;
+}
+
+// 🔄 Réinitialisation
 function clearTracker() {
   if (confirm("Effacer toutes les données du mois ? 💞")) {
     localStorage.removeItem('tracker');
@@ -644,49 +701,103 @@ function clearTracker() {
   }
 }
 
-/* --- Style Tracker --- */
+/* --- 🎨 STYLE TRACKER --- */
 const trackerStyle = document.createElement('style');
 trackerStyle.textContent = `
   .calendar {
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
+
   .calendar h3 {
-    color: var(--terracotta);
+    color: var(--terracotta, #BD6549);
     margin-bottom: 12px;
+    font-family: 'Playfair Display', serif;
   }
-  .grid {
+
+  .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
+    grid-template-columns: repeat(7, 46px);
+    gap: 8px;
+    justify-content: center;
+    margin: 10px auto;
   }
+
   .day {
     background: #fff;
-    border-radius: 10px;
-    padding: 6px;
-    box-shadow: var(--shadow);
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     font-size: 0.9rem;
     cursor: pointer;
+    text-align: center;
+    padding: 6px 2px;
+    transition: transform 0.2s ease, background 0.3s ease;
+    position: relative;
   }
-  .day span {
+
+  .day:hover {
+    transform: scale(1.05);
+    background: #fff0eb;
+  }
+
+  .day-number {
+    font-size: 0.7rem;
+    color: #333;
+  }
+
+  .emoji {
     display: block;
-    font-size: 1.4rem;
-    margin-top: 4px;
+    font-size: 1.3rem;
+    margin-top: 2px;
   }
+
+  .emoji-picker {
+    position: absolute;
+    top: -55px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    display: flex;
+    padding: 4px 6px;
+    z-index: 10;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .emoji-picker button {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    margin: 0 3px;
+    cursor: pointer;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
   button {
-    background: var(--terracotta);
+    background: var(--terracotta, #BD6549);
     color: white;
     border: none;
     padding: 10px 16px;
     border-radius: 16px;
     margin-top: 14px;
-    font-family: 'Playfair Display';
+    font-family: 'Playfair Display', serif;
     cursor: pointer;
   }
+
   button:hover {
-    background: var(--terracotta-light);
+    background: #a5503c;
     transform: scale(1.05);
-  }`;
+  }
+`;
 document.head.appendChild(trackerStyle);
+
 
 
 /* ===========================================================
@@ -940,5 +1051,75 @@ navButtons.forEach(btn => {
       .catch(err => console.log("Erreur Service Worker :", err));
   }
 </script>
+<!-- 💞 POPUP GÉNÉRIQUE POUR IDÉES ET QUIZ -->
+<div id="romanticPopup" class="romantic-popup hidden">
+  <div class="popup-content">
+    <span id="popupClose" class="popup-close">✖</span>
+    <h3 id="popupTitle"></h3>
+    <p id="popupText"></p>
+  </div>
+</div>
+
+<style>
+  /* === 🌸 STYLE POPUP ROMANTIQUE === */
+  .romantic-popup {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+  }
+  .romantic-popup.hidden { display: none; }
+  .popup-content {
+    background: #fff8f6;
+    color: #5a2e22;
+    font-family: 'Playfair Display', serif;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    text-align: center;
+    max-width: 320px;
+    animation: popupIn 0.3s ease;
+  }
+  .popup-close {
+    position: absolute;
+    right: 15px; top: 10px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #BD6549;
+  }
+  #popupTitle {
+    font-size: 1.3rem;
+    color: #BD6549;
+    margin-bottom: 12px;
+  }
+  #popupText {
+    font-size: 1.05rem;
+    line-height: 1.4;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes popupIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+</style>
+
+<script>
+  // ✨ Fonction universelle d’affichage d’une popup
+  function showRomanticPopup(title, text) {
+    const popup = document.getElementById('romanticPopup');
+    document.getElementById('popupTitle').textContent = title;
+    document.getElementById('popupText').textContent = text;
+    popup.classList.remove('hidden');
+
+    document.getElementById('popupClose').onclick = () => popup.classList.add('hidden');
+    popup.addEventListener('click', e => {
+      if (e.target.id === 'romanticPopup') popup.classList.add('hidden');
+    });
+  }
+</script>
+
+
 </body>
 </html>
